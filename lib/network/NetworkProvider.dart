@@ -4,6 +4,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_news_app/constant/ConstantFile.dart';
+import 'package:flutter_news_app/model/ModelNews.dart';
 import 'package:flutter_news_app/model/ModelUser.dart';
 import 'package:flutter_news_app/ui_page/DashboardPage.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,7 @@ import 'package:http/http.dart' as http;
 abstract class BaseEndpoint{
   void registerUser(String myName, String myEmail, String myPassword, BuildContext context);
   Future<List> loginUser(String myEmail, String myPassword, BuildContext context);
+  Future<List> getNews();
 }
 
 
@@ -58,7 +60,6 @@ class NetworkProvider extends BaseEndpoint{
     var listData1 = jsonDecode(response.body);
     List listUser = listData1['user'];
     print("Tag Saya ${listUser[0]}");
-//    return listUser[0];
 
     ModelUser listData = modelUserFromJson(response.body);
     if(listData.status == 200){
@@ -67,5 +68,14 @@ class NetworkProvider extends BaseEndpoint{
     } else {
       return null;
     }
+  }
+
+  @override
+  Future<List> getNews() async {
+    // TODO: implement getNews
+    final response = await http.get(ConstantFile().baseUrl +"getNews");
+    ModelNews listData = modelNewsFromJson(response.body);
+
+    return listData.article;
   }
 }
