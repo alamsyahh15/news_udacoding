@@ -26,6 +26,8 @@ dependencies:
   http:
   shared_preferences:
   awesome_dialog:
+  image_picker:
+  firebase_messaging:
 
 dev_dependencies:
   flutter_test:

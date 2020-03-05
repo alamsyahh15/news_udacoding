@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_news_app/model/ModelUser.dart';
 import 'package:flutter_news_app/network/NetworkProvider.dart';
@@ -14,7 +15,9 @@ class _LoginPageState extends State<LoginPage> {
   BaseEndpoint network = NetworkProvider();
   TextEditingController etPassword = new TextEditingController();
   TextEditingController etEmail = new TextEditingController();
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
+  var _token;
   var status = false;
   var globIduser, globName, globEmail, globPhoto;
   var globStatus;
@@ -29,6 +32,10 @@ class _LoginPageState extends State<LoginPage> {
       print("myData : ${data.idUser} ${data.fullnameUser} ${data.emailUser}");
       setState(() {
         status = true;
+        _firebaseMessaging.getToken().then((token){
+          print("Mytoken : $token");
+          _token = token;
+        });
         savePreference(status, data.idUser, data.fullnameUser, data.emailUser,
             data.photoUser);
       });

@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'dart:io';
+import 'package:async/async.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ abstract class BaseEndpoint{
   void registerUser(String myName, String myEmail, String myPassword, BuildContext context);
   Future<List> loginUser(String myEmail, String myPassword, BuildContext context);
   Future<List> getNews();
+  void addNews(String title, String content, String description, File image);
 }
 
 
@@ -77,5 +79,28 @@ class NetworkProvider extends BaseEndpoint{
     ModelNews listData = modelNewsFromJson(response.body);
 
     return listData.article;
+  }
+
+  @override
+  void addNews(String title, String content, String description, File image) async{
+    // TODO: implement addNews
+
+    var stream = http.ByteStream(DelegatingStream.typed(image.openRead()));
+    var length = await image.length();
+
+    var request = http.MultipartRequest('POST',
+        Uri.parse(ConstantFile().baseUrl + "addNews"));
+    var multipart = http.MultipartFile('image',stream,length,filename: image.path);
+
+    request.files.add(multipart);
+    request.fields['title'] = title;
+    request.fields['content'] = content;
+    request.fields['description'] = description;
+    var response = await request.send();
+    if(response.statusCode == 200){
+      print("Image Uploaded");
+    } else {
+      print("Image Failed Uploaded");
+    }
   }
 }

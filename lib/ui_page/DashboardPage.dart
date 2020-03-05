@@ -1,5 +1,7 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_news_app/ui_page/RegisterLogin/LoginPage.dart';
+import 'package:flutter_news_app/ui_page/add_page/AddPage.dart';
 import 'package:flutter_news_app/ui_page/history/HistoryPage.dart';
 import 'package:flutter_news_app/ui_page/home/PageHome.dart';
 import 'package:flutter_news_app/ui_page/popular/PopularPage.dart';
@@ -13,6 +15,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int _selectedIndex = 0;
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   onSelected(int index) {
     setState(() {
@@ -57,8 +60,35 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _firebaseMessaging.subscribeToTopic("InternshipTopic");
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+        final notification = message['notification'];
+        print(notification['title']);
+      },
+
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+        final notification = message['notification'];
+        print(notification['title']);
+      },
+
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+        final notification = message['notification'];
+        print(notification['title']);
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(),
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Container(
@@ -107,8 +137,16 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
         actions: <Widget>[
+
           IconButton(
-            icon: Icon(Icons.exit_to_app, color: Colors.red,),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AddPage()));
+            },
+            icon: Icon(Icons.note_add,color: Colors.red,size: 30,),
+          ),
+
+          IconButton(
+            icon: Icon(Icons.exit_to_app, color: Colors.red,size: 30,),
             onPressed: () {
               signOut();
             },
