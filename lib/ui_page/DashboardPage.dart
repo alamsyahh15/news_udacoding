@@ -65,6 +65,7 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     _firebaseMessaging.subscribeToTopic("InternshipTopic");
     _firebaseMessaging.configure(
+
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
         final notification = message['notification'];
@@ -82,6 +83,7 @@ class _DashboardPageState extends State<DashboardPage> {
         final notification = message['notification'];
         print(notification['title']);
       },
+
     );
   }
 

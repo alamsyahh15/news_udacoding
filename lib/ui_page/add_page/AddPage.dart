@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
+import 'package:flutter_news_app/constant/ConstantFile.dart';
 import 'package:flutter_news_app/network/NetworkProvider.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -88,6 +90,8 @@ class _AddPageState extends State<AddPage> {
               );
               await network.getNews();
               Navigator.pop(context);
+
+              network.sendNotification(ConstantFile().imageUrl + path.basename(_image.path));
               },
             child: Text("Posting"),
           )

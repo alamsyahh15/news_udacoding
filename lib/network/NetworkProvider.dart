@@ -15,6 +15,9 @@ abstract class BaseEndpoint{
   Future<List> loginUser(String myEmail, String myPassword, BuildContext context);
   Future<List> getNews();
   void addNews(String title, String content, String description, File image);
+  void sendNotification(String urlImage);
+  void updateImage(String idUser, File imageUser);
+  void updateProfile(String idUser, String myName, String myEmail, String myPassword);
 }
 
 
@@ -103,4 +106,63 @@ class NetworkProvider extends BaseEndpoint{
       print("Image Failed Uploaded");
     }
   }
+
+  @override
+  void sendNotification(String urlImage) async{
+    // TODO: implement sendNotification
+    final body = jsonEncode({
+      "to": "/topics/InternshipTopic",
+      "topic" : "InternshipTopic",
+      "notification" : {
+        "body" : "test",
+        "title" : "Heyy.. Ada berita baru ayo check..",
+        "sound": "default",
+        "image": urlImage,
+      },
+    });
+    await http.post("https://fcm.googleapis.com/fcm/send", headers: {
+      HttpHeaders.authorizationHeader: ConstantFile().keyServer,
+      HttpHeaders.contentTypeHeader: "application/json"
+    }, body: body);
+    
+  }
+
+  @override
+  void updateImage(String idUser, File imageUser) async{
+    // TODO: implement updateImage
+    var stream = http.ByteStream(DelegatingStream.typed(imageUser.openRead()));
+    var length = await imageUser.length();
+
+    var request = http.MultipartRequest('POST',
+        Uri.parse(ConstantFile().baseUrl + "updateImage"));
+    var multipart = http.MultipartFile('image',stream,length,filename: imageUser.path);
+
+    request.files.add(multipart);
+    request.fields['iduser'] = idUser;
+    var response = await request.send();
+    if(response.statusCode == 200){
+      print("Image Uploaded");
+    } else {
+      print("Image Failed Uploaded");
+    }
+  }
+
+  @override
+  void updateProfile(String idUser, String myName, String myEmail, String myPassword) async{
+    // TODO: implement updateProfile
+    final response = await http.post(ConstantFile().baseUrl + "updateProfile", body: {
+      'iduser': idUser,
+      'name': myName,
+      'email': myEmail,
+      'password': myPassword
+    });
+    var listData = jsonDecode(response.body);
+    if(listData['status'] == 200){
+      print(listData['message']);
+    } else {
+      print(listData['message']);
+    }
+  }
+
+
 }
